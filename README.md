@@ -10,7 +10,7 @@ AWS SERVERLESS IS AWESOME!!!!
 
 
 ## Useful commands
-
+* `npm install`      install all dependencies before you run cdk
 * `cdk deploy`      deploy this stack to your default AWS account/region
 * `cdk diff`        compare deployed stack with current state
 * `cdk synth`       emits the synthesized CloudFormation template
