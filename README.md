@@ -1,14 +1,16 @@
-# Welcome to your CDK TypeScript project
+# CDK Project with Example StepFunctions (Lambda functions) State Machine
 
-This is a blank project for TypeScript development with CDK.
+This is a CDK project created using the example on https://aws.amazon.com/getting-started/hands-on/create-a-serverless-workflow-step-functions-lambda/
 
-The `cdk.json` file tells the CDK Toolkit how to execute your app.
+It creates 5 lambda functions, a StepFunctions state machine and related roles. Execution fails or succeeds based on a random number generated in Work On Case lambda function, to demonstrate both cases.
+
+This can be used as a boilerplate project to create more complicated state machines.
+
+AWS SERVERLESS IS AWESOME!!!!
+
 
 ## Useful commands
 
-* `npm run build`   compile typescript to js
-* `npm run watch`   watch for changes and compile
-* `npm run test`    perform the jest unit tests
 * `cdk deploy`      deploy this stack to your default AWS account/region
 * `cdk diff`        compare deployed stack with current state
 * `cdk synth`       emits the synthesized CloudFormation template
