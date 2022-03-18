@@ -108,7 +108,7 @@ export class StepfunctionsStack extends Stack {
     });
 
     sqsHandlerLambda.role?.attachInlinePolicy(
-      new iam.Policy(this, 'list-buckets-policy', {
+      new iam.Policy(this, 'allow-sfn-execution', {
         statements: [sfnExecutionPolicy],
       }),
     );
