@@ -20,6 +20,8 @@ exports.handler = async function (event, context, callback) {
         //     }
         // });
     });
+    
+    //TODO: handle all quee elements. Add them to array/map above and handle in loop here
     console.log(params)
     console.log("Calling step functions...");
     const success = await stepfunctions.startExecution(params).promise();
