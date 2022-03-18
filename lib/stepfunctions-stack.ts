@@ -64,17 +64,17 @@ export class StepfunctionsStack extends Stack {
     const jobFailed = new sfn.Fail(this, 'Fail', {
       cause: 'Engage Tier 2 Support',
     });
-    
+
     const isComplete = new sfn.Choice(this, 'Is Case Resolved');
-    
+
     const chain = sfn.Chain.start(openCase)
-    .next(assignCase)
-    .next(workOnCase)
-    .next(
-      isComplete
-        .when(sfn.Condition.numberEquals('$.Payload.Status', 1), closeCase)
-        .when(sfn.Condition.numberEquals('$.Payload.Status', 0), escalateCase.next(jobFailed)),
-    );
+      .next(assignCase)
+      .next(workOnCase)
+      .next(
+        isComplete
+          .when(sfn.Condition.numberEquals('$.Payload.Status', 1), closeCase)
+          .when(sfn.Condition.numberEquals('$.Payload.Status', 0), escalateCase.next(jobFailed)),
+      );
 
     const stateMachine = new sfn.StateMachine(this, 'StateMachine', {
       definition: chain,
@@ -98,7 +98,7 @@ export class StepfunctionsStack extends Stack {
 
     sqsHandlerLambda.addEventSource(new SqsEventSource(queue, {
       batchSize: 10, // default
-      maxBatchingWindow: Duration.minutes(0),
+      maxBatchingWindow: Duration.minutes(1),
       reportBatchItemFailures: true, // default to false
     }));
 
@@ -113,6 +113,6 @@ export class StepfunctionsStack extends Stack {
       }),
     );
 
-    
+
   }
 }
