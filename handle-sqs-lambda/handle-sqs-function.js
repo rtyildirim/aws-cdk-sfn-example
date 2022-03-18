@@ -1,5 +1,5 @@
 var aws = require('aws-sdk')
-exports.handler = async function (event, context, callback) {
+exports.handler = async function (event, context) {
     event.Records.forEach(record => {
         const { body } = record;
         console.log(body);
@@ -18,5 +18,5 @@ exports.handler = async function (event, context, callback) {
             }
         });
     });
-    callback(null, JSON.stringify({ }));
+    return {};
 }
