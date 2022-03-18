@@ -1,20 +1,15 @@
-import { Stack, StackProps } from 'aws-cdk-lib';
+import { Stack, StackProps, Duration } from 'aws-cdk-lib';
 import { Construct } from 'constructs';
 import * as lambda from 'aws-cdk-lib/aws-lambda';
 import * as sfn from 'aws-cdk-lib/aws-stepfunctions';
+import * as iam from 'aws-cdk-lib/aws-iam';
 import * as tasks from 'aws-cdk-lib/aws-stepfunctions-tasks';
-// import * as sqs from 'aws-cdk-lib/aws-sqs';
+import * as sqs from 'aws-cdk-lib/aws-sqs';
+import { SqsEventSource } from 'aws-cdk-lib/aws-lambda-event-sources';
 
 export class StepfunctionsStack extends Stack {
   constructor(scope: Construct, id: string, props?: StackProps) {
     super(scope, id, props);
-
-    // The code that defines your stack goes here
-
-    // example resource
-    // const queue = new sqs.Queue(this, 'StepfunctionsQueue', {
-    //   visibilityTimeout: cdk.Duration.seconds(300)
-    // });
 
     const openCaseLambda = new lambda.Function(this, 'OpenCase', {
       runtime: lambda.Runtime.NODEJS_14_X,
@@ -81,9 +76,43 @@ export class StepfunctionsStack extends Stack {
         .when(sfn.Condition.numberEquals('$.Payload.Status', 0), escalateCase.next(jobFailed)),
     );
 
-    new sfn.StateMachine(this, 'StateMachine', {
+    const stateMachine = new sfn.StateMachine(this, 'StateMachine', {
       definition: chain,
     });
+
+
+    const queue = new sqs.Queue(this, 'StepfunctionsQueue', {
+      visibilityTimeout: Duration.seconds(30),      // default,
+      receiveMessageWaitTime: Duration.seconds(20), // default
+    });
+
+    //TODO: new lambda to trogger State Machine 
+    const sqsHandlerLambda = new lambda.Function(this, 'HandleSqsInput', {
+      runtime: lambda.Runtime.NODEJS_14_X,
+      code: lambda.Code.fromAsset('handle-sqs-lambda'),
+      handler: 'handle-sqs-function.handler',
+      environment: {
+        QUEUE_ARN: stateMachine.stateMachineArn
+      }
+    });
+
+    sqsHandlerLambda.addEventSource(new SqsEventSource(queue, {
+      batchSize: 10, // default
+      maxBatchingWindow: Duration.minutes(0),
+      reportBatchItemFailures: true, // default to false
+    }));
+
+    const sfnExecutionPolicy = new iam.PolicyStatement({
+      actions: ['states:StartExecution'],
+      resources: [stateMachine.stateMachineArn],
+    });
+
+    sqsHandlerLambda.role?.attachInlinePolicy(
+      new iam.Policy(this, 'list-buckets-policy', {
+        statements: [sfnExecutionPolicy],
+      }),
+    );
+
     
   }
 }

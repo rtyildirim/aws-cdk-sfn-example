@@ -4,6 +4,8 @@ This is a CDK project created using the example on https://aws.amazon.com/gettin
 
 It creates 5 lambda functions, a StepFunctions state machine and related roles. Execution fails or succeeds based on a random number generated in Work On Case lambda function, to demonstrate both cases.
 
+Project also creates an SQS queue. The queue triggers a lambda function that starts the execution of the state machine. Input to the queue must be just the case id. (a number or a string)
+
 This can be used as a boilerplate project to create more complicated state machines.
 
 AWS SERVERLESS IS AWESOME!!!!
