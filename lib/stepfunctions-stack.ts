@@ -88,9 +88,14 @@ export class StepfunctionsStack extends Stack {
 
     //TODO: new lambda to trogger State Machine 
     const sqsHandlerLambda = new lambda.Function(this, 'HandleSqsInput', {
-      runtime: lambda.Runtime.NODEJS_14_X,
-      code: lambda.Code.fromAsset('handle-sqs-lambda'),
-      handler: 'handle-sqs-function.handler',
+      // runtime: lambda.Runtime.GO_1_X,
+      // code: lambda.Code.fromAsset('handle-sqs-lambda'),
+      // handler: 'handle-sqs-function.handler',
+      runtime: lambda.Runtime.GO_1_X,
+      handler: "main",
+      code: lambda.Code.fromAsset("./sqs-handler-go/lambda-api-function.zip"),
+      memorySize: 128,
+      timeout: Duration.seconds(10),
       environment: {
         QUEUE_ARN: stateMachine.stateMachineArn
       }
